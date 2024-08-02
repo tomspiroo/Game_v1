@@ -20,32 +20,26 @@ class Upgrade:
         # selection system
         self.selection_index = 0
         self.selection_time = None
-        self.can_move = True
+        self.can_upgrade = True
         self.selection_cooldown_time = 300
     
     def input(self):
-        keys = pygame.key.get_pressed()
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_pressed = pygame.mouse.get_pressed()[0]
 
-        if self.can_move:
-            if keys[pygame.K_RIGHT] and self.selection_index < self.attribute_nmbr - 1:
-                self.selection_index += 1
-                self.can_move = False
-                self.selection_time = pygame.time.get_ticks()
-            elif keys[pygame.K_LEFT]and self.selection_index >= 1:
-                self.selection_index -= 1
-                self.can_move = False
-                self.selection_time = pygame.time.get_ticks()
-
-            if keys[pygame.K_RETURN]: # <- return might not work for right enter, could change to space
-                self.can_move = False
-                self.selection_time = pygame.time.get_ticks()
-                self.item_list[self.selection_index].trigger(self.player)
+        for index, item in enumerate(self.item_list):
+            if item.rect.collidepoint(mouse_pos):
+                self.selection_index = index
+                if mouse_pressed and self.can_upgrade:  
+                    item.trigger(self.player)
+                    self.can_upgrade = False
+                    self.selection_time = pygame.time.get_ticks()
 
     def selection_cooldown(self):
-        if not self.can_move:
+        if not self.can_upgrade:
             current_time = pygame.time.get_ticks()
             if current_time - self.selection_time >= self.selection_cooldown_time:
-                self.can_move = True
+                self.can_upgrade = True
 
     def create_items(self):
         self.item_list = []

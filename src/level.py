@@ -13,6 +13,7 @@ from enemy import Enemy
 from particles import AnimationPlayer
 from magic import MagicPlayer
 from upgrade import Upgrade
+from pause import Pause 
 
 class Level:
     def __init__(self):
@@ -20,6 +21,8 @@ class Level:
         # get display surface
         self.display_surface = pygame.display.get_surface()
         self.game_paused = False
+        self.upgrade_menu_display = False
+        self.pause_menu_display = False
 
         # sprite group setup
         self.visible_sprites = YSortCameraGroup()
@@ -35,7 +38,8 @@ class Level:
 
         # user interface
         self.ui = UI()
-        self.upgrade = Upgrade(self.player)
+        self.upgrade_menu = Upgrade(self.player)
+        self.pause_menu = Pause(self.player)
 
         # particles
         self.animation_player = AnimationPlayer()
@@ -135,15 +139,22 @@ class Level:
     def add_exp(self,amount):
         self.player.exp += amount 
 
-    def toggle_menu(self):
+    def toggle_upgrade_menu(self):
         self.game_paused = not self.game_paused
+        self.upgrade_menu_display = not self.upgrade_menu_display
+
+    def toggle_pause_menu(self):
+        self.game_paused = not self.game_paused
+        self.pause_menu_display = not self.pause_menu_display
 
     def run(self):
         self.visible_sprites.custom_draw(self.player)
         self.ui.display(self.player)
 
-        if self.game_paused:
-            self.upgrade.display()
+        if self.game_paused and self.upgrade_menu_display:
+            self.upgrade_menu.display()
+        elif self.game_paused and self.pause_menu_display:
+            self.pause_menu.display()
         else:
             self.visible_sprites.update()
             self.visible_sprites.enemy_update(self.player)
