@@ -39,7 +39,7 @@ class Level:
         # user interface
         self.ui = UI()
         self.upgrade_menu = Upgrade(self.player)
-        self.pause_menu = Pause(self.player)
+        self.pause_menu = Pause()
 
         # particles
         self.animation_player = AnimationPlayer()
@@ -140,21 +140,32 @@ class Level:
         self.player.exp += amount 
 
     def toggle_upgrade_menu(self):
-        self.game_paused = not self.game_paused
-        self.upgrade_menu_display = not self.upgrade_menu_display
+        if not self.upgrade_menu_display:
+            self.upgrade_menu_display = True
+            self.pause_menu_display = False  
+        else:
+            self.upgrade_menu_display = False
+
+        self.game_paused = self.upgrade_menu_display or self.pause_menu_display
 
     def toggle_pause_menu(self):
-        self.game_paused = not self.game_paused
-        self.pause_menu_display = not self.pause_menu_display
+        if not self.pause_menu_display:
+            self.pause_menu_display = True
+            self.upgrade_menu_display = False  
+        else:
+            self.pause_menu_display = False
+
+        self.game_paused = self.upgrade_menu_display or self.pause_menu_display
 
     def run(self):
         self.visible_sprites.custom_draw(self.player)
         self.ui.display(self.player)
 
-        if self.game_paused and self.upgrade_menu_display:
-            self.upgrade_menu.display()
-        elif self.game_paused and self.pause_menu_display:
-            self.pause_menu.display()
+        if self.game_paused:
+            if self.upgrade_menu_display:
+                self.upgrade_menu.display()
+            elif self.pause_menu_display:
+                self.pause_menu.display()
         else:
             self.visible_sprites.update()
             self.visible_sprites.enemy_update(self.player)

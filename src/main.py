@@ -16,8 +16,12 @@ class Game:
 
         # sound
         main_sound = pygame.mixer.Sound('../audio/main.ogg')
-        main_sound.set_volume(0.5)
+        main_sound.set_volume(0.0)
         main_sound.play(loops=-1)
+
+        # menu toggles
+        self.upgrade_menu_toggle = False
+        self.pause_menu_toggle = False 
  
     def run(self):
         self.screen
@@ -31,8 +35,8 @@ class Game:
                     if event.key == pygame.K_m:
                         self.level.toggle_upgrade_menu()
                     
-                    # if event.key == pygame.K_ESCAPE:
-                    #     self.level.toggle_pause_menu()
+                    if event.key == pygame.K_ESCAPE:
+                        self.level.toggle_pause_menu()
             
             # update window
             self.screen.fill(WATER_COLOUR)
